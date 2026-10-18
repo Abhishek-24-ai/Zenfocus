@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenFocus — Modern Pomodoro Timer</title>
+  <meta name="description" content="A modern, aesthetic web-based Pomodoro timer with sleek circular countdown, audio chime notifications, and productivity modes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div class="app-container">
+    <!-- Top Navigation -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">ZenFocus</span>
+          <span class="brand-tag">Pomodoro</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-sound-toggle" class="icon-btn" title="Toggle Sound / Test Audio" aria-label="Toggle sound">
+          <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="sound-icon-off" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <button id="btn-test-sound" class="text-pill-btn" title="Play strong completion music sample">
+          <span>🎵 Test Music</span>
+        </button>
+
+        <button id="btn-settings-open" class="icon-btn" title="Timer Settings" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Card -->
+    <main class="timer-card glass-panel">
+      <!-- Mode Tabs -->
+      <nav class="mode-tabs" role="tablist" aria-label="Timer modes">
+        <button id="tab-pomodoro" class="tab-btn active" role="tab" aria-selected="true" data-mode="pomodoro">
+          <span class="tab-label">Focus</span>
+          <span class="tab-duration">25m</span>
+        </button>
+        <button id="tab-shortBreak" class="tab-btn" role="tab" aria-selected="false" data-mode="shortBreak">
+          <span class="tab-label">Short Break</span>
+          <span class="tab-duration">5m</span>
+        </button>
+        <button id="tab-longBreak" class="tab-btn" role="tab" aria-selected="false" data-mode="longBreak">
+          <span class="tab-label">Long Break</span>
+          <span class="tab-duration">15m</span>
+        </button>
+        <div class="tab-glider"></div>
+      </nav>
+
+      <!-- Center Display with Circular Progress SVG -->
+      <div class="dial-container">
+        <svg class="progress-ring" viewBox="0 0 340 340" aria-hidden="true">
+          <defs>
+            <linearGradient id="ring-gradient-focus" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ff6b6b" />
+              <stop offset="50%" stop-color="#ff8e53" />
+              <stop offset="100%" stop-color="#ff416c" />
+            </linearGradient>
+            <linearGradient id="ring-gradient-shortBreak" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f2fe" />
+              <stop offset="100%" stop-color="#4facfe" />
+            </linearGradient>
+            <linearGradient id="ring-gradient-longBreak" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#43e97b" />
+              <stop offset="100%" stop-color="#38f9d7" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Background Track -->
+          <circle class="ring-bg" cx="170" cy="170" r="145"></circle>
+          <!-- Foreground Progress -->
+          <circle id="progress-circle" class="ring-fg" cx="170" cy="170" r="145"></circle>
+        </svg>
+
+        <!-- Time and Status Center Display -->
+        <div class="dial-content">
+          <div class="session-badge" id="session-badge">
+            <span class="badge-dot"></span>
+            <span id="badge-text">Focus Session</span>
+          </div>
+
+          <h1 id="timer-display" class="timer-digits">25:00</h1>
+
+          <div class="session-progress-dots" id="cycle-dots" title="Pomodoro cycle completion (4 cycles = long break)">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <span class="cycle-label" id="cycle-text">Session 1 of 4</span>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="controls-row">
+        <!-- Reset Button -->
+        <button id="btn-reset" class="control-btn secondary-btn" title="Reset current session (Hotkey: R)" aria-label="Reset Timer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          <span class="btn-text">Reset</span>
+        </button>
+
+        <!-- Main Start / Pause Button -->
+        <button id="btn-toggle" class="control-btn primary-btn" title="Start/Pause countdown (Hotkey: Space)" aria-label="Start Timer">
+          <span class="btn-icon">
+            <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6 3 20 12 6 21 6 3"></polygon>
+            </svg>
+            <svg id="icon-pause" class="hidden" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+            </svg>
+          </span>
+          <span id="btn-toggle-label" class="btn-label">Start</span>
+        </button>
+
+        <!-- Skip / Forward Button -->
+        <button id="btn-skip" class="control-btn secondary-btn" title="Skip to next session" aria-label="Skip to next session">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+            <line x1="19" y1="5" x2="19" y2="19"></line>
+          </svg>
+          <span class="btn-text">Skip</span>
+        </button>
+      </div>
+
+      <!-- Custom Time in Minutes Input -->
+      <div class="custom-time-section">
+        <div class="custom-time-header">
+          <div class="custom-time-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Custom Duration</span>
+          </div>
+          <span class="custom-time-hint">Set any time in minutes</span>
+        </div>
+
+        <div class="custom-time-form">
+          <div class="custom-input-wrapper">
+            <input type="number" id="custom-minutes-input" min="1" max="180" value="25" placeholder="25" aria-label="Custom time in minutes">
+            <span class="custom-input-unit">min</span>
+          </div>
+          <button id="btn-set-custom-time" class="btn-custom-set" type="button">Set Time</button>
+        </div>
+
+        <div class="quick-presets">
+          <button type="button" class="preset-pill" data-min="1">1m (Quick Test)</button>
+          <button type="button" class="preset-pill" data-min="5">5m</button>
+          <button type="button" class="preset-pill" data-min="15">15m</button>
+          <button type="button" class="preset-pill active" data-min="25">25m</button>
+          <button type="button" class="preset-pill" data-min="45">45m</button>
+          <button type="button" class="preset-pill" data-min="60">60m</button>
+        </div>
+      </div>
+
+      <!-- Dedicated Audio Element for Sound Effect -->
+      <audio id="alarm-audio" src="alarm.wav" preload="auto"></audio>
+
+      <!-- Quick Tips & Hotkeys -->
+      <footer class="timer-footer">
+        <div class="shortcut-hints">
+          <span class="shortcut"><kbd>Space</kbd> Start / Pause</span>
+          <span class="shortcut-separator">•</span>
+          <span class="shortcut"><kbd>R</kbd> Reset</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Productivity Stats Bar -->
+    <section class="stats-card glass-panel">
+      <div class="stat-item">
+        <span class="stat-number" id="stat-completed">0</span>
+        <span class="stat-name">Sessions Completed</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-focus-time">0m</span>
+        <span class="stat-name">Total Focus Time</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-streak">0</span>
+        <span class="stat-name">Current Streak 🔥</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- Settings Modal Backdrop & Dialog -->
+  <div id="settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h2 id="settings-heading" class="modal-title">Timer Settings</h2>
+        <button id="btn-settings-close" class="icon-btn close-btn" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-group">
+          <label class="setting-title">Time (Minutes)</label>
+          <div class="time-inputs-grid">
+            <div class="input-card">
+              <label for="input-pomodoro">Focus</label>
+              <input type="number" id="input-pomodoro" min="1" max="90" value="25">
+            </div>
+            <div class="input-card">
+              <label for="input-shortBreak">Short Break</label>
+              <input type="number" id="input-shortBreak" min="1" max="30" value="5">
+            </div>
+            <div class="input-card">
+              <label for="input-longBreak">Long Break</label>
+              <input type="number" id="input-longBreak" min="1" max="60" value="15">
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-title">Sound & Alerts</label>
+          <div class="setting-row">
+            <div class="setting-desc">
+              <span class="setting-label">Sound Notification</span>
+              <span class="setting-subtext">Play acoustic chime when countdown finishes</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setting-sound-enabled" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-desc">
+              <span class="setting-label">End-of-Timer Music</span>
+              <span class="setting-subtext">Sound effect when countdown completes</span>
+            </div>
+            <select id="setting-chime-style" class="custom-select">
+              <option value="fanfare" selected>Strong Victory Fanfare 🎺 (Default)</option>
+              <option value="zen">Zen Temple Chime 🧘</option>
+              <option value="crystal">Crystal Marimba 💎</option>
+              <option value="digital">Modern Pulse ⚡</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-desc">
+              <span class="setting-label">Volume</span>
+            </div>
+            <input type="range" id="setting-volume" min="10" max="100" value="85" class="custom-range">
+          </div>
+        </div>
+
+        <!-- Background Color Changer Inside Settings Bar -->
+        <div class="setting-group">
+          <div class="setting-desc" style="margin-bottom: 8px;">
+            <label class="setting-title">Background Color Theme</label>
+            <span class="setting-subtext">Select your favorite ambient atmosphere</span>
+          </div>
+          <div class="setting-theme-grid" id="theme-swatches">
+            <button type="button" class="theme-card-btn active" data-theme="midnight" title="Midnight Slate">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #182030, #ff6348);"></span>
+              <span class="theme-card-title">Midnight</span>
+            </button>
+            <button type="button" class="theme-card-btn" data-theme="violet" title="Cosmic Violet">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #241142, #a855f7);"></span>
+              <span class="theme-card-title">Violet</span>
+            </button>
+            <button type="button" class="theme-card-btn" data-theme="cyan" title="Electric Ocean">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #072a3e, #00f2fe);"></span>
+              <span class="theme-card-title">Cyan</span>
+            </button>
+            <button type="button" class="theme-card-btn" data-theme="emerald" title="Zen Forest">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #093322, #10b981);"></span>
+              <span class="theme-card-title">Emerald</span>
+            </button>
+            <button type="button" class="theme-card-btn" data-theme="sunset" title="Golden Sunset">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #381c04, #f59e0b);"></span>
+              <span class="theme-card-title">Sunset</span>
+            </button>
+            <button type="button" class="theme-card-btn" data-theme="crimson" title="Ruby Rose">
+              <span class="theme-card-preview" style="background: linear-gradient(135deg, #360917, #f43f5e);"></span>
+              <span class="theme-card-title">Crimson</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label class="setting-title">Preferences</label>
+          <div class="setting-row">
+            <div class="setting-desc">
+              <span class="setting-label">Auto-start Breaks</span>
+              <span class="setting-subtext">Automatically begin break timer when focus completes</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setting-auto-break">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-settings-reset" class="btn-ghost">Reset Defaults</button>
+        <button id="btn-settings-save" class="btn-solid">Save & Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Completion Banner Toast Notification -->
+  <div id="toast-notification" class="toast-card glass-panel hidden" role="status" aria-live="polite">
+    <div class="toast-icon">✨</div>
+    <div class="toast-body">
+      <h4 id="toast-title" class="toast-title">Session Complete!</h4>
+      <p id="toast-message" class="toast-message">Great job! Time for a well-deserved break.</p>
+    </div>
+    <button id="btn-toast-dismiss" class="toast-close" aria-label="Dismiss toast">×</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
