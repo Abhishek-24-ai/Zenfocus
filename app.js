@@ -89,10 +89,12 @@ class PomodoroTimer {
     this.statFocusTime = document.getElementById('stat-focus-time');
     this.statStreak = document.getElementById('stat-streak');
 
-    // Settings Modal
+    // Settings Modal & Back Buttons
     this.settingsModal = document.getElementById('settings-modal');
     this.btnSettingsOpen = document.getElementById('btn-settings-open');
     this.btnSettingsClose = document.getElementById('btn-settings-close');
+    this.btnSettingsBack = document.getElementById('btn-settings-back');
+    this.btnSettingsFooterBack = document.getElementById('btn-settings-footer-back');
     this.btnSettingsSave = document.getElementById('btn-settings-save');
     this.btnSettingsReset = document.getElementById('btn-settings-reset');
     this.inputPomodoro = document.getElementById('input-pomodoro');
@@ -101,7 +103,18 @@ class PomodoroTimer {
     this.settingSoundEnabled = document.getElementById('setting-sound-enabled');
     this.settingChimeStyle = document.getElementById('setting-chime-style');
     this.settingVolume = document.getElementById('setting-volume');
+    this.settingVolumeLabel = document.getElementById('setting-volume-label');
     this.settingAutoBreak = document.getElementById('setting-auto-break');
+
+    // Header Music & Theme Controls
+    this.btnThemeQuick = document.getElementById('btn-theme-quick');
+    this.currentMusicPill = document.getElementById('current-music-pill');
+    this.activeSoundPill = document.getElementById('active-sound-pill');
+    this.activeThemePill = document.getElementById('active-theme-pill');
+
+    // Interactive Music Cards
+    this.musicCards = document.querySelectorAll('.music-card-btn');
+    this.musicPreviewBtns = document.querySelectorAll('.music-card-preview-btn');
 
     // Toast
     this.toastNotification = document.getElementById('toast-notification');
@@ -120,6 +133,16 @@ class PomodoroTimer {
     // Theme Switchers inside Settings Modal
     this.themeSwatches = document.querySelectorAll('.theme-card-btn, .theme-swatch-btn');
     this.settingTheme = document.getElementById('setting-theme');
+
+    // Sound metadata mapping
+    this.soundMeta = {
+      fanfare: { name: 'Victory Fanfare', icon: '🎺', desc: 'Triumphant Brass' },
+      zen: { name: 'Zen Temple Chime', icon: '🧘', desc: '528Hz Solfeggio' },
+      crystal: { name: 'Crystal Marimba', icon: '💎', desc: 'Melodic Triad' },
+      digital: { name: 'Modern Pulse', icon: '⚡', desc: 'Crisp Dual Alert' },
+      bell: { name: 'Acoustic Bell', icon: '🔔', desc: 'Warm Desk Chime' },
+      harp: { name: 'Celestial Harp', icon: '✨', desc: 'Ambient Glissando' },
+    };
 
     // Configure progress circle
     if (this.progressCircle) {
@@ -216,7 +239,7 @@ class PomodoroTimer {
     } else if (type === 'zen') {
       // Peaceful Zen Meditation Chime (Harmonic frequencies with soothing exponential decay)
       const freqs = [528, 1056, 1584, 2112]; // 528 Hz Solfeggio & overtones
-      const weights = [0.6, 0.25, 0.1, 0.05];
+      const weights = [0.65, 0.28, 0.12, 0.06];
 
       freqs.forEach((freq, i) => {
         const osc = ctx.createOscillator();
@@ -226,16 +249,16 @@ class PomodoroTimer {
         osc.frequency.setValueAtTime(freq, now);
 
         gain.gain.setValueAtTime(weights[i], now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
 
         osc.connect(gain);
         gain.connect(masterGain);
 
         osc.start(now);
-        osc.stop(now + 3.5);
+        osc.stop(now + 3.6);
       });
     } else if (type === 'crystal') {
-      // Crystal Marimba 3-Note Melodic Triad
+      // Crystal Marimba 4-Note Melodic Triad
       const notes = [
         { freq: 523.25, time: 0 },    // C5
         { freq: 659.25, time: 0.16 }, // E5
@@ -251,7 +274,7 @@ class PomodoroTimer {
         osc.frequency.setValueAtTime(note.freq, now + note.time);
 
         gain.gain.setValueAtTime(0.001, now + note.time);
-        gain.gain.linearRampToValueAtTime(0.5, now + note.time + 0.02);
+        gain.gain.linearRampToValueAtTime(0.55, now + note.time + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + note.time + 1.8);
 
         osc.connect(gain);
@@ -259,6 +282,56 @@ class PomodoroTimer {
 
         osc.start(now + note.time);
         osc.stop(now + note.time + 2.0);
+      });
+    } else if (type === 'bell') {
+      // Warm resonant acoustic meditation desk bell
+      const bellFreqs = [587.33, 1174.66, 1762.0, 2349.3]; // D5 and natural bell harmonics
+      const bellGains = [0.65, 0.35, 0.15, 0.08];
+      const decays = [2.8, 2.0, 1.4, 0.9];
+
+      bellFreqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(bellGains[idx], now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + decays[idx]);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + decays[idx] + 0.1);
+      });
+    } else if (type === 'harp') {
+      // Celestial Cosmic Harp - gentle arpeggiated glissando
+      const notes = [
+        { freq: 523.25, time: 0 },    // C5
+        { freq: 659.25, time: 0.12 }, // E5
+        { freq: 783.99, time: 0.24 }, // G5
+        { freq: 987.77, time: 0.36 }, // B5
+        { freq: 1046.50, time: 0.48 }, // C6
+        { freq: 1318.51, time: 0.60 }  // E6
+      ];
+
+      notes.forEach((note) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(note.freq, now + note.time);
+
+        gain.gain.setValueAtTime(0.001, now + note.time);
+        gain.gain.linearRampToValueAtTime(0.45, now + note.time + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + note.time + 2.2);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(now + note.time);
+        osc.stop(now + note.time + 2.4);
       });
     } else {
       // Modern Digital Pulse Chime
@@ -274,7 +347,7 @@ class PomodoroTimer {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(note.freq, now + note.time);
 
-        gain.gain.setValueAtTime(0.4, now + note.time);
+        gain.gain.setValueAtTime(0.45, now + note.time);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + note.time + 0.8);
 
         osc.connect(gain);
@@ -313,33 +386,109 @@ class PomodoroTimer {
   }
 
   /**
+   * Primary method to play completion music.
+   * If fanfare is selected: plays alarm.wav (with Web Audio fallback).
+   * For all other music: stops alarm.wav and synthesizes the exact chosen music!
+   */
+  playMusic(style = this.preferences.chimeStyle) {
+    if (!this.preferences.soundEnabled) return;
+
+    if (style === 'fanfare') {
+      if (this.alarmAudio) {
+        try {
+          this.alarmAudio.volume = Math.max(0, Math.min(1, this.preferences.volume));
+          this.alarmAudio.currentTime = 0;
+          const playPromise = this.alarmAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              this.playChime('fanfare');
+            });
+          }
+        } catch {
+          this.playChime('fanfare');
+        }
+      } else {
+        this.playChime('fanfare');
+      }
+    } else {
+      // For all non-fanfare sounds, ensure alarm.wav is stopped
+      if (this.alarmAudio) {
+        try {
+          this.alarmAudio.pause();
+          this.alarmAudio.currentTime = 0;
+        } catch {}
+      }
+      this.playChime(style);
+    }
+  }
+
+  /**
+   * Preview a specific music track with toast feedback
+   */
+  previewMusic(style) {
+    this.stopZeroAlarm();
+    this.playMusic(style);
+    const meta = this.soundMeta[style] || { name: style, icon: '🎵' };
+    this.showToast('Music Preview', `Playing ${meta.name} ${meta.icon}`);
+  }
+
+  /**
+   * Select a music track, update active cards and indicators, and preview it
+   */
+  selectMusic(style, preview = false) {
+    if (!this.soundMeta[style]) style = 'fanfare';
+    this.preferences.chimeStyle = style;
+
+    // Update active state on music cards
+    if (this.musicCards) {
+      this.musicCards.forEach((card) => {
+        const m = card.getAttribute('data-music');
+        card.classList.toggle('active', m === style);
+      });
+    }
+
+    // Sync select element
+    if (this.settingChimeStyle) {
+      this.settingChimeStyle.value = style;
+    }
+
+    // Update active badges & pills
+    const meta = this.soundMeta[style] || { name: style, icon: '🎵' };
+    if (this.activeSoundPill) {
+      this.activeSoundPill.textContent = `Music: ${meta.name}`;
+    }
+    if (this.currentMusicPill) {
+      this.currentMusicPill.textContent = meta.name;
+    }
+
+    this.savePreferences();
+
+    if (preview) {
+      this.previewMusic(style);
+    }
+  }
+
+  /**
+   * Test currently selected music from header button
+   */
+  testSelectedMusic() {
+    this.stopZeroAlarm();
+    this.playMusic(this.preferences.chimeStyle);
+    const meta = this.soundMeta[this.preferences.chimeStyle] || { name: 'Victory Fanfare', icon: '🎺' };
+    this.showToast('Test Music', `Playing ${meta.name} ${meta.icon}`);
+  }
+
+  /**
    * Sound effect triggered when the timer reaches 00:00.
-   * Plays the resonant alarm chime WAV file via HTML5 Audio and synthesizes
-   * harmonic overtones via Web Audio API for guaranteed audio playback.
+   * Plays the user's selected music (Fanfare, Zen, Crystal, Modern Pulse, Bell, or Harp).
    */
   playZeroAlarm() {
     if (!this.preferences.soundEnabled) return;
 
-    // 1. Play dedicated HTML5 Audio element
-    if (this.alarmAudio) {
-      try {
-        this.alarmAudio.volume = Math.max(0, Math.min(1, this.preferences.volume));
-        this.alarmAudio.currentTime = 0;
-        const playPromise = this.alarmAudio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((err) => {
-            console.warn('HTML5 Audio autoplay restricted, using Web Audio fallback:', err);
-          });
-        }
-      } catch (err) {
-        console.warn('Audio play error:', err);
-      }
-    }
+    // Play the currently selected music
+    this.playMusic(this.preferences.chimeStyle);
 
-    // 2. Play Web Audio API harmonic chime chord / victory fanfare
-    this.playChime(this.preferences.chimeStyle);
-
-    // 3. Visual time-up flash on timer digits
+    // Visual time-up flash on timer digits
     if (this.timerDisplay) {
       this.timerDisplay.classList.add('time-up');
       clearTimeout(this.flashTimer);
@@ -417,7 +566,7 @@ class PomodoroTimer {
   }
 
   /**
-   * Set and persist background color theme
+   * Set and persist background color theme / ambient lighting
    */
   setTheme(themeName, showNotification = true) {
     const validThemes = ['midnight', 'violet', 'cyan', 'emerald', 'sunset', 'crimson'];
@@ -439,6 +588,12 @@ class PomodoroTimer {
       this.settingTheme.value = themeName;
     }
 
+    // Update active theme badge pill
+    if (this.activeThemePill) {
+      const capName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+      this.activeThemePill.textContent = `Active: ${capName}`;
+    }
+
     this.savePreferences();
 
     if (showNotification) {
@@ -450,9 +605,19 @@ class PomodoroTimer {
         sunset: 'Golden Sunset 🌅',
         crimson: 'Ruby Rose 🌹'
       };
-      this.showToast('Theme Updated', `Background changed to ${themeLabels[themeName] || themeName}!`);
+      this.showToast('Background Light', `Atmosphere changed to ${themeLabels[themeName] || themeName}!`);
       this.playClickSound();
     }
+  }
+
+  /**
+   * Quick cycle to next ambient background theme
+   */
+  cycleTheme() {
+    const themes = ['midnight', 'violet', 'cyan', 'emerald', 'sunset', 'crimson'];
+    const currentIndex = themes.indexOf(this.preferences.theme || 'midnight');
+    const nextIndex = (currentIndex + 1) % themes.length;
+    this.setTheme(themes[nextIndex], true);
   }
 
   /* -------------------------------------------------------------
@@ -466,18 +631,60 @@ class PomodoroTimer {
 
     // Sound Header Buttons
     this.btnSoundToggle.addEventListener('click', () => this.toggleSound());
-    this.btnTestSound.addEventListener('click', () => {
-      this.playZeroAlarm();
-      this.showToast('Victory Fanfare', 'Playing strong completion music! 🎺');
-    });
+    this.btnTestSound.addEventListener('click', () => this.testSelectedMusic());
+
+    // Quick Theme Switcher Button in Header
+    if (this.btnThemeQuick) {
+      this.btnThemeQuick.addEventListener('click', () => this.cycleTheme());
+    }
 
     // Theme Swatch Buttons
     if (this.themeSwatches) {
       this.themeSwatches.forEach((swatch) => {
         swatch.addEventListener('click', () => {
           const theme = swatch.getAttribute('data-theme');
-          this.setTheme(theme);
+          this.setTheme(theme, true);
         });
+      });
+    }
+
+    // Music Cards Click & Preview Buttons
+    if (this.musicCards) {
+      this.musicCards.forEach((card) => {
+        card.addEventListener('click', (e) => {
+          // If clicked preview button, handle separately
+          if (e.target.closest('.music-card-preview-btn')) return;
+          const music = card.getAttribute('data-music');
+          this.selectMusic(music, true);
+        });
+      });
+    }
+
+    if (this.musicPreviewBtns) {
+      this.musicPreviewBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const music = btn.getAttribute('data-preview');
+          this.previewMusic(music);
+        });
+      });
+    }
+
+    // Fallback select change
+    if (this.settingChimeStyle) {
+      this.settingChimeStyle.addEventListener('change', () => {
+        this.selectMusic(this.settingChimeStyle.value, true);
+      });
+    }
+
+    // Volume Slider Live Feedback
+    if (this.settingVolume) {
+      this.settingVolume.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (this.settingVolumeLabel) {
+          this.settingVolumeLabel.textContent = `${val}%`;
+        }
+        this.preferences.volume = Math.max(0.05, Math.min(1, val / 100));
       });
     }
 
@@ -530,9 +737,15 @@ class PomodoroTimer {
       }
     });
 
-    // Settings Modal
+    // Settings Modal Open, Close, & Back
     this.btnSettingsOpen.addEventListener('click', () => this.openSettings());
     this.btnSettingsClose.addEventListener('click', () => this.closeSettings());
+    if (this.btnSettingsBack) {
+      this.btnSettingsBack.addEventListener('click', () => this.closeSettings());
+    }
+    if (this.btnSettingsFooterBack) {
+      this.btnSettingsFooterBack.addEventListener('click', () => this.closeSettings());
+    }
     this.settingsModal.addEventListener('click', (e) => {
       if (e.target === this.settingsModal) this.closeSettings();
     });
@@ -844,11 +1057,20 @@ class PomodoroTimer {
     this.inputShortBreak.value = Math.round(this.durations.shortBreak / 60);
     this.inputLongBreak.value = Math.round(this.durations.longBreak / 60);
     this.settingSoundEnabled.checked = this.preferences.soundEnabled;
-    this.settingChimeStyle.value = this.preferences.chimeStyle;
-    if (this.settingTheme) {
-      this.settingTheme.value = this.preferences.theme || 'midnight';
+
+    // Sync volume slider and label
+    const volPercent = Math.round(this.preferences.volume * 100);
+    this.settingVolume.value = volPercent;
+    if (this.settingVolumeLabel) {
+      this.settingVolumeLabel.textContent = `${volPercent}%`;
     }
-    this.settingVolume.value = Math.round(this.preferences.volume * 100);
+
+    // Sync music cards and indicators
+    this.selectMusic(this.preferences.chimeStyle || 'fanfare', false);
+
+    // Sync theme swatches and indicators
+    this.setTheme(this.preferences.theme || 'midnight', false);
+
     this.settingAutoBreak.checked = this.preferences.autoBreak;
 
     this.settingsModal.classList.remove('hidden');
@@ -876,12 +1098,14 @@ class PomodoroTimer {
     document.querySelector('#tab-longBreak .tab-duration').textContent = `${lMinutes}m`;
 
     this.preferences.soundEnabled = this.settingSoundEnabled.checked;
-    this.preferences.chimeStyle = this.settingChimeStyle.value;
-    if (this.settingTheme) {
-      this.setTheme(this.settingTheme.value, false);
-    }
     this.preferences.volume = Math.max(0.05, Math.min(1, parseInt(this.settingVolume.value, 10) / 100));
     this.preferences.autoBreak = this.settingAutoBreak.checked;
+
+    // Update main header current music pill
+    const currentMeta = this.soundMeta[this.preferences.chimeStyle] || { name: 'Victory Fanfare' };
+    if (this.currentMusicPill) {
+      this.currentMusicPill.textContent = currentMeta.name;
+    }
 
     this.updateSoundIcons();
     this.savePreferences();
@@ -894,8 +1118,8 @@ class PomodoroTimer {
     }
 
     this.closeSettings();
-    this.showToast('Settings Saved', 'Your timer preferences have been updated.');
-    this.playChime();
+    this.showToast('Settings Saved', 'Timer preferences, music, and background light updated! ✨');
+    this.playMusic(this.preferences.chimeStyle);
   }
 
   resetSettingsToDefault() {
@@ -904,9 +1128,15 @@ class PomodoroTimer {
     this.inputShortBreak.value = 5;
     this.inputLongBreak.value = 15;
     this.settingSoundEnabled.checked = true;
-    this.settingChimeStyle.value = 'zen';
-    this.settingVolume.value = 80;
+    this.settingVolume.value = 85;
+    if (this.settingVolumeLabel) {
+      this.settingVolumeLabel.textContent = '85%';
+    }
     this.settingAutoBreak.checked = false;
+
+    this.selectMusic('fanfare', false);
+    this.setTheme('midnight', false);
+    this.showToast('Defaults Restored', 'Settings reset to factory defaults.');
   }
 
   /* -------------------------------------------------------------
@@ -930,6 +1160,9 @@ class PomodoroTimer {
       if (this.preferences.theme) {
         this.setTheme(this.preferences.theme, false);
       }
+
+      // Apply saved music selection
+      this.selectMusic(this.preferences.chimeStyle || 'fanfare', false);
 
       const savedDurations = localStorage.getItem('zenfocus_durations');
       if (savedDurations) {

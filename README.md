@@ -9,16 +9,17 @@ A modern, high-precision web-based Pomodoro timer designed with glassmorphism ae
 - **Large 25-Minute Countdown Display**: Monospaced tabular numerals (`25:00`) with zero layout shifts.
 - **Dynamic Circular Progress Ring**: Smooth SVG circular track with glowing gradient animation.
 - **Custom Duration Input**: Set any custom duration in minutes directly on the main card or use quick preset pills (`1m`, `5m`, `15m`, `25m`, `45m`, `60m`).
-- **Strong End-of-Timer Music**: 4.2-second celebratory **Victory Fanfare** (`alarm.wav`) backed by Web Audio API synthesis.
-- **Smart Completion Lifecycle**: Stops completely at `00:00` with a `Restart` action—no unwanted auto-switching or runaway timers.
-- **6 Ambient Background Themes**:
-  - 🌌 **Midnight**: Deep obsidian slate with coral glow *(Default)*
-  - 🔮 **Cosmic Violet**: Deep space purple with magenta/violet glow
-  - 🌊 **Electric Ocean**: Deep navy with cyan & aqua glow
-  - 🌿 **Zen Forest**: Jade green with fresh emerald glow
-  - 🌅 **Golden Sunset**: Twilight noir with warm amber & gold
-  - 🌹 **Ruby Rose**: Velvet noir with rich crimson radiance
-- **Productivity Modes**: Focus (25m), Short Break (5m), and Long Break (15m).
+- **Selectable End-of-Timer Music**: 6 high-fidelity audio options with instant audio previews:
+  - 🎺 **Victory Fanfare**: Triumphant brass fanfare celebration (`alarm.wav`)
+  - 🧘 **Zen Temple Chime**: Soothing 528Hz Solfeggio singing bowl chime
+  - 💎 **Crystal Marimba**: Bright ascending 4-note crystalline triad
+  - ⚡ **Modern Pulse**: Crisp contemporary electronic dual alert
+  - 🔔 **Acoustic Bell**: Warm resonant meditation desk bell
+  - ✨ **Celestial Harp**: Gentle atmospheric ambient glissando
+- **Settings & Theme Navigation**:
+  - Always-visible sticky **Save & Apply** button and **Back** buttons in both the header and footer.
+  - Interactive cards with active checkmark indicators for both music and ambient background lighting.
+  - One-click quick background light switcher in the main header.
 - **Session & Streak Tracker**: Daily completed sessions, total focus time, and streak count saved to `localStorage`.
 - **Keyboard Shortcuts**:
   - <kbd>Space</kbd>: Start / Pause

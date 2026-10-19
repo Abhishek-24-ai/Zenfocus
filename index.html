@@ -44,8 +44,22 @@
           </svg>
         </button>
 
-        <button id="btn-test-sound" class="text-pill-btn" title="Play strong completion music sample">
+        <button id="btn-test-sound" class="text-pill-btn" title="Play current completion music sample" aria-label="Test current music">
           <span>🎵 Test Music</span>
+        </button>
+
+        <button id="btn-theme-quick" class="icon-btn" title="Quick switch background light / theme" aria-label="Quick switch background light">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
         </button>
 
         <button id="btn-settings-open" class="icon-btn" title="Timer Settings" aria-label="Open settings">
@@ -225,9 +239,17 @@
   <!-- Settings Modal Backdrop & Dialog -->
   <div id="settings-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
     <div class="modal-card glass-panel">
+      <!-- Modal Header with Explicit Back Button and Close Button -->
       <div class="modal-header">
+        <button id="btn-settings-back" class="btn-modal-back" type="button" title="Back to Timer" aria-label="Back to Timer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back</span>
+        </button>
         <h2 id="settings-heading" class="modal-title">Timer Settings</h2>
-        <button id="btn-settings-close" class="icon-btn close-btn" aria-label="Close settings">
+        <button id="btn-settings-close" class="icon-btn close-btn" type="button" title="Close settings" aria-label="Close settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -236,6 +258,7 @@
       </div>
 
       <div class="modal-body">
+        <!-- 1. Time Presets -->
         <div class="setting-group">
           <label class="setting-title">Time (Minutes)</label>
           <div class="time-inputs-grid">
@@ -254,8 +277,10 @@
           </div>
         </div>
 
+        <!-- 2. Sound & Alerts with Rich Music Selection Cards -->
         <div class="setting-group">
           <label class="setting-title">Sound & Alerts</label>
+
           <div class="setting-row">
             <div class="setting-desc">
               <span class="setting-label">Sound Notification</span>
@@ -269,59 +294,168 @@
 
           <div class="setting-row">
             <div class="setting-desc">
-              <span class="setting-label">End-of-Timer Music</span>
-              <span class="setting-subtext">Sound effect when countdown completes</span>
+              <span class="setting-label">Volume (<span id="setting-volume-label">85%</span>)</span>
             </div>
-            <select id="setting-chime-style" class="custom-select">
+            <input type="range" id="setting-volume" min="10" max="100" value="85" class="custom-range">
+          </div>
+
+          <!-- Interactive Music Cards Grid -->
+          <div class="setting-subgroup">
+            <div class="setting-desc" style="margin-top: 4px; margin-bottom: 8px;">
+              <span class="setting-label">End-of-Timer Music</span>
+              <span class="setting-subtext">Choose your celebration sound (click card to select & preview):</span>
+            </div>
+
+            <div class="music-cards-grid" id="music-cards-container">
+              <button type="button" class="music-card-btn active" data-music="fanfare" title="Strong Victory Fanfare">
+                <div class="music-card-info">
+                  <span class="music-card-icon">🎺</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Victory Fanfare</span>
+                    <span class="music-card-tag">Triumphant Brass</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="fanfare">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+
+              <button type="button" class="music-card-btn" data-music="zen" title="Zen Temple Chime">
+                <div class="music-card-info">
+                  <span class="music-card-icon">🧘</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Zen Temple Chime</span>
+                    <span class="music-card-tag">528Hz Solfeggio</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="zen">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+
+              <button type="button" class="music-card-btn" data-music="crystal" title="Crystal Marimba">
+                <div class="music-card-info">
+                  <span class="music-card-icon">💎</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Crystal Marimba</span>
+                    <span class="music-card-tag">Melodic Triad</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="crystal">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+
+              <button type="button" class="music-card-btn" data-music="digital" title="Modern Pulse">
+                <div class="music-card-info">
+                  <span class="music-card-icon">⚡</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Modern Pulse</span>
+                    <span class="music-card-tag">Crisp Dual Alert</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="digital">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+
+              <button type="button" class="music-card-btn" data-music="bell" title="Acoustic Bell">
+                <div class="music-card-info">
+                  <span class="music-card-icon">🔔</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Acoustic Bell</span>
+                    <span class="music-card-tag">Warm Desk Chime</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="bell">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+
+              <button type="button" class="music-card-btn" data-music="harp" title="Celestial Harp">
+                <div class="music-card-info">
+                  <span class="music-card-icon">✨</span>
+                  <div class="music-card-text">
+                    <span class="music-card-title">Celestial Harp</span>
+                    <span class="music-card-tag">Ambient Glissando</span>
+                  </div>
+                </div>
+                <div class="music-card-actions">
+                  <span class="music-card-check">✓</span>
+                  <span class="music-card-preview-btn" title="Preview sound" data-preview="harp">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            <!-- Fallback select for accessibility sync -->
+            <select id="setting-chime-style" class="custom-select" style="display: none;" aria-label="Select Chime Music">
               <option value="fanfare" selected>Strong Victory Fanfare 🎺 (Default)</option>
               <option value="zen">Zen Temple Chime 🧘</option>
               <option value="crystal">Crystal Marimba 💎</option>
               <option value="digital">Modern Pulse ⚡</option>
+              <option value="bell">Acoustic Bell 🔔</option>
+              <option value="harp">Celestial Harp ✨</option>
             </select>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-desc">
-              <span class="setting-label">Volume</span>
-            </div>
-            <input type="range" id="setting-volume" min="10" max="100" value="85" class="custom-range">
           </div>
         </div>
 
-        <!-- Background Color Changer Inside Settings Bar -->
-        <div class="setting-group">
-          <div class="setting-desc" style="margin-bottom: 8px;">
-            <label class="setting-title">Background Color Theme</label>
-            <span class="setting-subtext">Select your favorite ambient atmosphere</span>
-          </div>
+        <!-- 3. Background Light & Atmosphere Themes Inside Settings -->
+        <div class="setting-group" id="setting-group-theme">
+          <label class="setting-title">Background Light & Atmosphere</label>
+          <span class="setting-subtext">Click any ambient light theme below to see real-time glow:</span>
+
           <div class="setting-theme-grid" id="theme-swatches">
             <button type="button" class="theme-card-btn active" data-theme="midnight" title="Midnight Slate">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #182030, #ff6348);"></span>
               <span class="theme-card-title">Midnight</span>
             </button>
             <button type="button" class="theme-card-btn" data-theme="violet" title="Cosmic Violet">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #241142, #a855f7);"></span>
               <span class="theme-card-title">Violet</span>
             </button>
             <button type="button" class="theme-card-btn" data-theme="cyan" title="Electric Ocean">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #072a3e, #00f2fe);"></span>
               <span class="theme-card-title">Cyan</span>
             </button>
             <button type="button" class="theme-card-btn" data-theme="emerald" title="Zen Forest">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #093322, #10b981);"></span>
               <span class="theme-card-title">Emerald</span>
             </button>
             <button type="button" class="theme-card-btn" data-theme="sunset" title="Golden Sunset">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #381c04, #f59e0b);"></span>
               <span class="theme-card-title">Sunset</span>
             </button>
             <button type="button" class="theme-card-btn" data-theme="crimson" title="Ruby Rose">
+              <span class="theme-check-icon">✓</span>
               <span class="theme-card-preview" style="background: linear-gradient(135deg, #360917, #f43f5e);"></span>
               <span class="theme-card-title">Crimson</span>
             </button>
           </div>
         </div>
 
+        <!-- 4. Preferences -->
         <div class="setting-group">
           <label class="setting-title">Preferences</label>
           <div class="setting-row">
@@ -337,9 +471,21 @@
         </div>
       </div>
 
+      <!-- Always Pinned Modal Footer with Back & Save/Apply -->
       <div class="modal-footer">
-        <button id="btn-settings-reset" class="btn-ghost">Reset Defaults</button>
-        <button id="btn-settings-save" class="btn-solid">Save & Apply</button>
+        <button id="btn-settings-footer-back" class="btn-ghost btn-footer-back" type="button" title="Back to timer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Back</span>
+        </button>
+        <button id="btn-settings-reset" class="btn-ghost" type="button">Reset Defaults</button>
+        <button id="btn-settings-save" class="btn-solid btn-save-apply" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Save & Apply</span>
+        </button>
       </div>
     </div>
   </div>
