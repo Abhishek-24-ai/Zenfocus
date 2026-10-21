@@ -930,7 +930,11 @@ class PomodoroTimer {
 
     // Update document title
     const modeLabel = this.isCompleted ? 'Time Up!' : (this.currentMode === 'pomodoro' ? 'Focus' : 'Break');
-    document.title = `(${formatted}) ${modeLabel} — ZenFocus`;
+    if (this.isRunning || this.isCompleted) {
+      document.title = `(${formatted}) ${modeLabel} — ZenFocus.time`;
+    } else {
+      document.title = 'ZenFocus.time - Minimalist Focus & Productivity Timer';
+    }
 
     // Circular SVG Progress Ring
     if (this.progressCircle) {
